@@ -1,4 +1,5 @@
 # Plan de Gestión de Configuración del Software (SCM)
+
 **Asignatura:** Ingeniería de Software (4K2)  
 **Grupo:** 10  
 
@@ -43,6 +44,9 @@ ISW-Grupo-10/
 │   └── Plan_Gestion_Configuracion_G10.md
 ├── .gitignore
 └── README.md
+```
+
+---
 
 ## 2. Identificación y Reglas de Nombrado de Ítems de Configuración
 
@@ -61,8 +65,8 @@ ISW-Grupo-10/
 ---
 
 ### Convenciones de variables utilizadas:
-* `<aaaa>`: Año en 4 dígitos (e.g., `2026`).
-* `<nn>`: Número de clase o trabajo práctico a dos dígitos (e.g., `04`, `05`, `10`).
-* `<nombre_material>` / `<nombre_tema>`: Descripción temática en minúsculas y separada por guiones bajos.
-* `<nombre_tipo>`: Tipo de entregable (e.g., `informe`, `presentacion`, `enunciado`).
-* `<ext>`: Extensión del archivo (`.md`, `.pdf`, `.docx`, `.pptx`, etc.).
+* `<aaaa>`: Año en 4 dígitos (ejemplo: `2026`).
+* `<nn>`: Número secuencial de clase o trabajo a dos dígitos (ejemplo: `04`, `05`, `10`).
+* `<nombre_material>` / `<nombre_tema>`: Descripción representativa en minúsculas separada por guiones bajos.
+* `<nombre_tipo>`: Naturaleza del entregable (ejemplo: `informe`, `presentacion`, `resolucion`).
+* `<ext>`: Extensión formal del archivo (`.md`, `.pdf`, `.docx`, `.pptx`).
