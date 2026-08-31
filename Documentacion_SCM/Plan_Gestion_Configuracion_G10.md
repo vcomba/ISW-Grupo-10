@@ -1,7 +1,7 @@
 # Plan de Gestión de Configuración del Software (SCM)
 
 **Asignatura:** Ingeniería y Calidad de Software (4K2)  
-**Grupo:** 10  
+**Grupo:** (10)
 
 ---
 
