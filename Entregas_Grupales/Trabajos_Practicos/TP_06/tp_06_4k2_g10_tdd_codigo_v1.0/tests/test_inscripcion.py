@@ -9,8 +9,6 @@ from inscripcion_actividades import (
     DatosVisitanteInvalidosError,
     EdadMinimaError,
     HorarioNoDisponibleError,
-    RepositorioCuposEnMemoria,
-    ServicioInscripcion,
     SinCupoError,
     TallaRequeridaError,
     TerminosNoAceptadosError,
@@ -31,40 +29,6 @@ def datos_validos(**cambios):
     }
     datos.update(cambios)
     return datos
-
-
-@pytest.fixture
-def cupos():
-    return RepositorioCuposEnMemoria()
-
-
-class CorreoFalso:
-    def __init__(self):
-        self.enviados = []
-
-    def enviar(self, mensaje):
-        self.enviados.append(mensaje)
-
-
-class GeneradorQRFalso:
-    def generar(self, contenido):
-        return f"QR[{contenido}]".encode()
-
-
-@pytest.fixture
-def correo():
-    return CorreoFalso()
-
-
-@pytest.fixture
-def ahora():
-    return datetime(2026, 10, 20, 8, 0)
-
-
-@pytest.fixture
-def servicio(cupos, correo, ahora):
-    return ServicioInscripcion(cupos, correo, GeneradorQRFalso(),
-                               reloj=lambda: ahora)
 
 
 def test_inscripcion_exitosa_con_cupo_horario_datos_y_terminos(servicio):

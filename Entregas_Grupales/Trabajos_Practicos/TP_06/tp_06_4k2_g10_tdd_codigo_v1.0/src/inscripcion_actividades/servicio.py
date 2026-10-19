@@ -1,4 +1,3 @@
-import re
 import uuid
 from datetime import datetime
 
@@ -6,12 +5,19 @@ from inscripcion_actividades.calendario import CalendarioParque
 from inscripcion_actividades.errores import (
     ActividadInexistenteError,
     CantidadPersonasInvalidaError,
-    CorreoInvalidoError,
     HorarioNoDisponibleError,
     SinCupoError,
     TerminosNoAceptadosError,
 )
-from inscripcion_actividades.modelo import CATALOGO, Inscripcion, Mensaje
+from inscripcion_actividades.modelo import CATALOGO, Inscripcion
+from inscripcion_actividades.notificacion import (
+    armar_confirmacion,
+    validar_correo,
+)
+
+
+def generar_codigo():
+    return uuid.uuid4().hex[:10].upper()
 
 
 class ServicioInscripcion:
@@ -36,21 +42,11 @@ class ServicioInscripcion:
             elegida.validar_participante(visitante)
         if not acepta_terminos:
             raise TerminosNoAceptadosError(actividad)
-        if not re.fullmatch(r"[^@\s]+@[^@\s]+\.[^@\s]+", correo):
-            raise CorreoInvalidoError(correo)
+        validar_correo(correo)
+
         inscripcion = Inscripcion(actividad, horario, cantidad_personas,
-                                  uuid.uuid4().hex[:10].upper(),
-                                  tuple(visitantes))
-        nombres = ", ".join(v.nombre for v in visitantes)
-        self._correo.enviar(Mensaje(
-            destinatario=correo,
-            asunto=f"Inscripcion confirmada: {actividad}",
-            cuerpo=(f"Actividad: {actividad}\n"
-                    f"Horario: {horario:%d/%m/%Y %H:%M}\n"
-                    f"Participantes: {nombres}\n"
-                    f"Codigo: {inscripcion.codigo}"),
-            qr=self._generador_qr.generar(inscripcion.codigo),
-        ))
+                                  generar_codigo(), tuple(visitantes))
+        self._notificar(inscripcion, correo)
         return inscripcion
 
     def _buscar_actividad(self, nombre):
@@ -73,3 +69,7 @@ class ServicioInscripcion:
     def _cupos_disponibles(self, actividad, horario):
         return (actividad.cupo_maximo
                 - self._cupos.ocupados(actividad.nombre, horario))
+
+    def _notificar(self, inscripcion, destinatario):
+        qr = self._generador_qr.generar(inscripcion.codigo)
+        self._correo.enviar(armar_confirmacion(inscripcion, destinatario, qr))
