@@ -5,6 +5,7 @@ import pytest
 from inscripcion_actividades import (
     ActividadInexistenteError,
     CantidadPersonasInvalidaError,
+    CorreoInvalidoError,
     DatosVisitanteInvalidosError,
     EdadMinimaError,
     HorarioNoDisponibleError,
@@ -37,14 +38,33 @@ def cupos():
     return RepositorioCuposEnMemoria()
 
 
+class CorreoFalso:
+    def __init__(self):
+        self.enviados = []
+
+    def enviar(self, mensaje):
+        self.enviados.append(mensaje)
+
+
+class GeneradorQRFalso:
+    def generar(self, contenido):
+        return f"QR[{contenido}]".encode()
+
+
+@pytest.fixture
+def correo():
+    return CorreoFalso()
+
+
 @pytest.fixture
 def ahora():
     return datetime(2026, 10, 20, 8, 0)
 
 
 @pytest.fixture
-def servicio(cupos, ahora):
-    return ServicioInscripcion(cupos, reloj=lambda: ahora)
+def servicio(cupos, correo, ahora):
+    return ServicioInscripcion(cupos, correo, GeneradorQRFalso(),
+                               reloj=lambda: ahora)
 
 
 def test_inscripcion_exitosa_con_cupo_horario_datos_y_terminos(servicio):
@@ -53,6 +73,34 @@ def test_inscripcion_exitosa_con_cupo_horario_datos_y_terminos(servicio):
     assert inscripcion.actividad == "Safari"
     assert inscripcion.horario == MIERCOLES_10
     assert inscripcion.cantidad_personas == 1
+
+
+def test_inscripcion_exitosa_envia_un_correo_con_la_informacion_y_un_qr(
+        servicio, correo):
+    inscripcion = servicio.inscribir(**datos_validos())
+
+    assert len(correo.enviados) == 1
+    mensaje = correo.enviados[0]
+    assert mensaje.destinatario == "ana@mail.com"
+    assert "Safari" in mensaje.asunto
+    assert "Safari" in mensaje.cuerpo
+    assert "21/10/2026 10:00" in mensaje.cuerpo
+    assert "Ana Perez" in mensaje.cuerpo
+    assert inscripcion.codigo in mensaje.cuerpo
+    assert mensaje.qr == f"QR[{inscripcion.codigo}]".encode()
+
+
+def test_inscripcion_rechazada_no_envia_correo(servicio, correo):
+    with pytest.raises(TerminosNoAceptadosError):
+        servicio.inscribir(**datos_validos(acepta_terminos=False))
+
+    assert correo.enviados == []
+
+
+@pytest.mark.parametrize("direccion", ["", "ana", "ana@", "@mail.com"])
+def test_correo_de_contacto_invalido_falla(servicio, direccion):
+    with pytest.raises(CorreoInvalidoError):
+        servicio.inscribir(**datos_validos(correo=direccion))
 
 
 def test_actividad_fuera_del_listado_falla(servicio):
