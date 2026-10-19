@@ -12,6 +12,7 @@ from inscripcion_actividades.errores import (
 from inscripcion_actividades.modelo import CATALOGO, Inscripcion
 from inscripcion_actividades.notificacion import (
     armar_confirmacion,
+    contenido_qr,
     validar_correo,
 )
 
@@ -84,5 +85,5 @@ class ServicioInscripcion:
                 - self._cupos.ocupados(actividad.nombre, horario))
 
     def _notificar(self, inscripcion, destinatario):
-        qr = self._generador_qr.generar(inscripcion.codigo)
+        qr = self._generador_qr.generar(contenido_qr(inscripcion))
         self._correo.enviar(armar_confirmacion(inscripcion, destinatario, qr))

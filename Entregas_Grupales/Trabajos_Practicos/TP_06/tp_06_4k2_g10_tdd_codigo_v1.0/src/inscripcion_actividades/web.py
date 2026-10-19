@@ -24,7 +24,10 @@ from inscripcion_actividades.errores import (
     TerminosNoAceptadosError,
 )
 from inscripcion_actividades.modelo import CATALOGO, TALLAS, Visitante
-from inscripcion_actividades.notificacion import armar_confirmacion
+from inscripcion_actividades.notificacion import (
+    armar_confirmacion,
+    contenido_qr,
+)
 from inscripcion_actividades.repositorio import RepositorioCuposEnMemoria
 from inscripcion_actividades.servicio import ServicioInscripcion
 
@@ -161,7 +164,7 @@ def crear_app(cupos=None, correo=None, generador_qr=None, reloj=hora_local):
                                       422)
         except OSError:
             return mostrar_formulario(FALLA_CORREO, request.form, 502)
-        qr = generador_qr.generar(inscripcion.codigo)
+        qr = generador_qr.generar(contenido_qr(inscripcion))
         mensaje = armar_confirmacion(inscripcion, datos["correo"], qr)
         return render_template(
             "confirmacion.html", inscripcion=inscripcion, mensaje=mensaje,

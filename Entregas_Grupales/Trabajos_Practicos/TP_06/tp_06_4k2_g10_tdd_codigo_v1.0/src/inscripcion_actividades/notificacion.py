@@ -20,6 +20,16 @@ def validar_correo(direccion):
         raise CorreoInvalidoError(direccion)
 
 
+def contenido_qr(inscripcion):
+    """Texto que se lee al escanear el QR en el ingreso a la actividad."""
+    participantes = "\n".join(f"- {v.nombre} (DNI {v.dni})"
+                              for v in inscripcion.visitantes)
+    return (f"EcoHarmony Park - Inscripci\u00f3n {inscripcion.codigo}\n"
+            f"Actividad: {inscripcion.actividad}\n"
+            f"Horario: {inscripcion.horario:%d/%m/%Y %H:%M}\n"
+            f"Participantes:\n{participantes}")
+
+
 def armar_confirmacion(inscripcion, destinatario, qr):
     nombres = ", ".join(v.nombre for v in inscripcion.visitantes)
     return Mensaje(
