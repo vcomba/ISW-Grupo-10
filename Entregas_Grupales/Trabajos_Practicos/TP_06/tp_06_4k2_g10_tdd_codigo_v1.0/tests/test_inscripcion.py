@@ -8,6 +8,7 @@ from inscripcion_actividades.inscripcion import (
     RepositorioCuposEnMemoria,
     ServicioInscripcion,
     SinCupoError,
+    TallaRequeridaError,
     TerminosNoAceptadosError,
     Visitante,
 )
@@ -75,3 +76,29 @@ def test_horario_con_parque_cerrado_o_actividad_no_disponible_falla(
 def test_sin_aceptar_terminos_y_condiciones_falla(servicio):
     with pytest.raises(TerminosNoAceptadosError):
         servicio.inscribir(**datos_validos(acepta_terminos=False))
+
+
+@pytest.mark.parametrize("actividad", ["Tirolesa", "Palestra"])
+def test_sin_talle_requerido_por_la_actividad_falla(servicio, actividad):
+    visitantes = [Visitante("Ana Perez", "30123456", 25)]
+
+    with pytest.raises(TallaRequeridaError):
+        servicio.inscribir(**datos_validos(actividad=actividad,
+                                           visitantes=visitantes))
+
+
+def test_talle_inexistente_falla(servicio):
+    visitantes = [Visitante("Ana Perez", "30123456", 25, talla="XXXL")]
+
+    with pytest.raises(TallaRequeridaError):
+        servicio.inscribir(**datos_validos(actividad="Tirolesa",
+                                           visitantes=visitantes))
+
+
+def test_con_talle_en_actividad_que_lo_requiere_pasa(servicio):
+    visitantes = [Visitante("Ana Perez", "30123456", 25, talla="M")]
+
+    inscripcion = servicio.inscribir(**datos_validos(actividad="Tirolesa",
+                                                     visitantes=visitantes))
+
+    assert inscripcion.actividad == "Tirolesa"
