@@ -18,6 +18,7 @@ from inscripcion_actividades.modelo import (
     TALLAS,
     Actividad,
     Inscripcion,
+    Mensaje,
     Visitante,
 )
 from inscripcion_actividades.repositorio import RepositorioCuposEnMemoria
@@ -36,6 +37,7 @@ __all__ = [
     "HorarioNoDisponibleError",
     "Inscripcion",
     "InscripcionError",
+    "Mensaje",
     "RepositorioCuposEnMemoria",
     "ServicioInscripcion",
     "SinCupoError",
