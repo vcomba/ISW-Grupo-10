@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from datetime import datetime
 
+from inscripcion_actividades.calendario import CalendarioParque
+
 
 @dataclass(frozen=True)
 class Actividad:
@@ -62,18 +64,15 @@ class RepositorioCuposEnMemoria:
 
 
 class ServicioInscripcion:
-    def __init__(self, cupos):
+    def __init__(self, cupos, calendario=CalendarioParque()):
         self._cupos = cupos
+        self._calendario = calendario
 
     def inscribir(self, actividad, horario, cantidad_personas, visitantes,
                   acepta_terminos, correo):
         if actividad not in CATALOGO:
             raise ActividadInexistenteError(actividad)
-        if horario.weekday() == 0:
-            raise HorarioNoDisponibleError(horario)
-        if (horario.month, horario.day) in [(12, 25), (1, 1)]:
-            raise HorarioNoDisponibleError(horario)
-        if not 9 <= horario.hour <= 17 or horario.minute != 0:
+        if not self._calendario.turno_disponible(horario):
             raise HorarioNoDisponibleError(horario)
         if self._cupos_disponibles(CATALOGO[actividad], horario) <= 0:
             raise SinCupoError(actividad)
