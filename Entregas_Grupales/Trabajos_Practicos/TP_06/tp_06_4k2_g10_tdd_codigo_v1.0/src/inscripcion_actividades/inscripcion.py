@@ -31,6 +31,10 @@ class SinCupoError(InscripcionError):
     pass
 
 
+class HorarioNoDisponibleError(InscripcionError):
+    pass
+
+
 @dataclass
 class Visitante:
     nombre: str
@@ -65,6 +69,12 @@ class ServicioInscripcion:
                   acepta_terminos, correo):
         if actividad not in CATALOGO:
             raise ActividadInexistenteError(actividad)
+        if horario.weekday() == 0:
+            raise HorarioNoDisponibleError(horario)
+        if (horario.month, horario.day) in [(12, 25), (1, 1)]:
+            raise HorarioNoDisponibleError(horario)
+        if not 9 <= horario.hour <= 17 or horario.minute != 0:
+            raise HorarioNoDisponibleError(horario)
         if self._cupos_disponibles(CATALOGO[actividad], horario) <= 0:
             raise SinCupoError(actividad)
         return Inscripcion(actividad, horario, cantidad_personas)
