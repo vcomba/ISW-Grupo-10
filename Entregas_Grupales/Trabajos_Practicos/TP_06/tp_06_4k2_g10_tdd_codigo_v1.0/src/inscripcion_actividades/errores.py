@@ -26,5 +26,9 @@ class TallaRequeridaError(InscripcionError):
     pass
 
 
+class EdadMinimaError(InscripcionError):
+    pass
+
+
 class TerminosNoAceptadosError(InscripcionError):
     pass

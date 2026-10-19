@@ -3,6 +3,7 @@ from datetime import datetime
 
 from inscripcion_actividades.errores import (
     DatosVisitanteInvalidosError,
+    EdadMinimaError,
     TallaRequeridaError,
 )
 
@@ -31,10 +32,13 @@ class Actividad:
     nombre: str
     cupo_maximo: int
     requiere_talla: bool = False
+    edad_minima: int = 0
 
     def validar_participante(self, visitante):
         if self.requiere_talla and visitante.talla not in TALLAS:
             raise TallaRequeridaError(visitante.nombre)
+        if visitante.edad < self.edad_minima:
+            raise EdadMinimaError(visitante.nombre)
 
 
 @dataclass(frozen=True)
@@ -47,9 +51,11 @@ class Inscripcion:
 CATALOGO = {
     actividad.nombre: actividad
     for actividad in (
-        Actividad("Tirolesa", cupo_maximo=10, requiere_talla=True),
+        Actividad("Tirolesa", cupo_maximo=10, requiere_talla=True,
+                  edad_minima=8),
         Actividad("Safari", cupo_maximo=8),
-        Actividad("Palestra", cupo_maximo=12, requiere_talla=True),
+        Actividad("Palestra", cupo_maximo=12, requiere_talla=True,
+                  edad_minima=12),
         Actividad("Jardin\u00eda", cupo_maximo=12),
     )
 }
