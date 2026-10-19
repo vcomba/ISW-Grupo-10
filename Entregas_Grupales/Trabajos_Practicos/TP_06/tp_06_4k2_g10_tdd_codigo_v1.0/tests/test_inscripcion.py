@@ -2,7 +2,7 @@ from datetime import datetime
 
 import pytest
 
-from inscripcion_actividades.inscripcion import (
+from inscripcion_actividades import (
     ActividadInexistenteError,
     CantidadPersonasInvalidaError,
     DatosVisitanteInvalidosError,
