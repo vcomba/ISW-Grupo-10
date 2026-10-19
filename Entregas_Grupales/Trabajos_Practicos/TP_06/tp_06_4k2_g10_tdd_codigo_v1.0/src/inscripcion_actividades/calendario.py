@@ -5,6 +5,11 @@ LUNES = 0
 
 @dataclass(frozen=True)
 class CalendarioParque:
+    """Dias de apertura del parque y turnos de una hora de las actividades.
+
+    ultimo_turno es la hora de inicio del ultimo turno (17 a 18 hs).
+    """
+
     dias_cerrados: frozenset = frozenset({LUNES})
     feriados_cerrados: frozenset = frozenset({(12, 25), (1, 1)})
     primer_turno: int = 9

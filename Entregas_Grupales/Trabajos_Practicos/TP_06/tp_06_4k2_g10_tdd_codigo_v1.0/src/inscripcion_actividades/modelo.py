@@ -13,6 +13,8 @@ EDAD_MAXIMA = 120
 
 @dataclass(frozen=True)
 class Visitante:
+    """Persona que participa de la actividad."""
+
     nombre: str
     dni: str
     edad: int
@@ -29,6 +31,8 @@ class Visitante:
 
 @dataclass(frozen=True)
 class Actividad:
+    """Actividad del parque con sus requisitos para cada participante."""
+
     nombre: str
     cupo_maximo: int
     requiere_talla: bool = False
@@ -52,6 +56,8 @@ class Inscripcion:
 
 @dataclass(frozen=True)
 class Mensaje:
+    """Correo de confirmacion; qr es la imagen del codigo de inscripcion."""
+
     destinatario: str
     asunto: str
     cuerpo: str

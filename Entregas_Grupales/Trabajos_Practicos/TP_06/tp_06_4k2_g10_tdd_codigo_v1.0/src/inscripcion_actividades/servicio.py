@@ -21,6 +21,12 @@ def generar_codigo():
 
 
 class ServicioInscripcion:
+    """Caso de uso: un visitante se inscribe a una actividad del parque.
+
+    Las dependencias externas (cupos, correo, QR, reloj) se reciben por
+    constructor para poder reemplazarlas por dobles en las pruebas.
+    """
+
     def __init__(self, cupos, correo, generador_qr,
                  calendario=CalendarioParque(), catalogo=CATALOGO,
                  reloj=datetime.now):
@@ -33,6 +39,12 @@ class ServicioInscripcion:
 
     def inscribir(self, actividad, horario, cantidad_personas, visitantes,
                   acepta_terminos, correo):
+        """Valida la solicitud, envia la confirmacion y reserva los lugares.
+
+        Lanza una subclase de InscripcionError ante el primer criterio de
+        aceptacion que no se cumpla; en ese caso no envia correo ni ocupa
+        cupos.
+        """
         elegida = self._buscar_actividad(actividad)
         self._validar_horario(horario)
         self._validar_cantidad(elegida, horario, cantidad_personas,
