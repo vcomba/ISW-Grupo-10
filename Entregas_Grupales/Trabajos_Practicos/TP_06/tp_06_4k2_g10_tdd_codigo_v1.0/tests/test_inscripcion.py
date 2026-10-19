@@ -4,7 +4,9 @@ import pytest
 
 from inscripcion_actividades.inscripcion import (
     ActividadInexistenteError,
+    RepositorioCuposEnMemoria,
     ServicioInscripcion,
+    SinCupoError,
     Visitante,
 )
 
@@ -24,9 +26,17 @@ def datos_validos(**cambios):
     return datos
 
 
-def test_inscripcion_exitosa_con_cupo_horario_datos_y_terminos():
-    servicio = ServicioInscripcion()
+@pytest.fixture
+def cupos():
+    return RepositorioCuposEnMemoria()
 
+
+@pytest.fixture
+def servicio(cupos):
+    return ServicioInscripcion(cupos)
+
+
+def test_inscripcion_exitosa_con_cupo_horario_datos_y_terminos(servicio):
     inscripcion = servicio.inscribir(**datos_validos())
 
     assert inscripcion.actividad == "Safari"
@@ -34,8 +44,13 @@ def test_inscripcion_exitosa_con_cupo_horario_datos_y_terminos():
     assert inscripcion.cantidad_personas == 1
 
 
-def test_actividad_fuera_del_listado_falla():
-    servicio = ServicioInscripcion()
-
+def test_actividad_fuera_del_listado_falla(servicio):
     with pytest.raises(ActividadInexistenteError):
         servicio.inscribir(**datos_validos(actividad="Paracaidismo"))
+
+
+def test_actividad_sin_cupo_para_el_horario_falla(servicio, cupos):
+    cupos.registrar("Safari", MIERCOLES_10, 8)
+
+    with pytest.raises(SinCupoError):
+        servicio.inscribir(**datos_validos())
