@@ -8,14 +8,17 @@ from inscripcion_actividades.calendario import CalendarioParque
 class Actividad:
     nombre: str
     cupo_maximo: int
+    requiere_talla: bool = False
 
+
+TALLAS = ("XS", "S", "M", "L", "XL", "XXL")
 
 CATALOGO = {
     actividad.nombre: actividad
     for actividad in (
-        Actividad("Tirolesa", cupo_maximo=10),
+        Actividad("Tirolesa", cupo_maximo=10, requiere_talla=True),
         Actividad("Safari", cupo_maximo=8),
-        Actividad("Palestra", cupo_maximo=12),
+        Actividad("Palestra", cupo_maximo=12, requiere_talla=True),
         Actividad("Jardin\u00eda", cupo_maximo=12),
     )
 }
@@ -41,11 +44,16 @@ class TerminosNoAceptadosError(InscripcionError):
     pass
 
 
+class TallaRequeridaError(InscripcionError):
+    pass
+
+
 @dataclass
 class Visitante:
     nombre: str
     dni: str
     edad: int
+    talla: str | None = None
 
 
 @dataclass
@@ -82,6 +90,10 @@ class ServicioInscripcion:
             raise SinCupoError(actividad)
         if not acepta_terminos:
             raise TerminosNoAceptadosError(actividad)
+        if CATALOGO[actividad].requiere_talla:
+            for visitante in visitantes:
+                if visitante.talla not in TALLAS:
+                    raise TallaRequeridaError(visitante.nombre)
         return Inscripcion(actividad, horario, cantidad_personas)
 
     def _cupos_disponibles(self, actividad, horario):
