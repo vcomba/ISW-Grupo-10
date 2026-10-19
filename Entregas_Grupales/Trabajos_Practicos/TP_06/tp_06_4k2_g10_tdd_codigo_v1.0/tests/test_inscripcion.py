@@ -5,6 +5,7 @@ import pytest
 from inscripcion_actividades.inscripcion import (
     ActividadInexistenteError,
     CantidadPersonasInvalidaError,
+    DatosVisitanteInvalidosError,
     HorarioNoDisponibleError,
     RepositorioCuposEnMemoria,
     ServicioInscripcion,
@@ -92,6 +93,22 @@ def test_cantidad_de_personas_invalida_falla(servicio, cantidad, visitantes):
     with pytest.raises(CantidadPersonasInvalidaError):
         servicio.inscribir(**datos_validos(cantidad_personas=cantidad,
                                            visitantes=visitantes))
+
+
+@pytest.mark.parametrize("visitante", [
+    Visitante("", "30123456", 25),
+    Visitante("   ", "30123456", 25),
+    Visitante("Ana Perez", "", 25),
+    Visitante("Ana Perez", "30.123.456", 25),
+    Visitante("Ana Perez", "123456", 25),
+    Visitante("Ana Perez", "301234567", 25),
+    Visitante("Ana Perez", "30123456", -1),
+    Visitante("Ana Perez", "30123456", 121),
+])
+def test_datos_del_visitante_incompletos_o_invalidos_falla(
+        servicio, visitante):
+    with pytest.raises(DatosVisitanteInvalidosError):
+        servicio.inscribir(**datos_validos(visitantes=[visitante]))
 
 
 @pytest.mark.parametrize("horario", [
