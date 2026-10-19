@@ -52,6 +52,10 @@ class CantidadPersonasInvalidaError(InscripcionError):
     pass
 
 
+class DatosVisitanteInvalidosError(InscripcionError):
+    pass
+
+
 @dataclass
 class Visitante:
     nombre: str
@@ -95,6 +99,13 @@ class ServicioInscripcion:
         if (self._cupos_disponibles(CATALOGO[actividad], horario)
                 < cantidad_personas):
             raise SinCupoError(actividad)
+        for visitante in visitantes:
+            if not visitante.nombre.strip():
+                raise DatosVisitanteInvalidosError("nombre")
+            if not (visitante.dni.isdigit() and 7 <= len(visitante.dni) <= 8):
+                raise DatosVisitanteInvalidosError("dni")
+            if not 0 <= visitante.edad <= 120:
+                raise DatosVisitanteInvalidosError("edad")
         if not acepta_terminos:
             raise TerminosNoAceptadosError(actividad)
         if CATALOGO[actividad].requiere_talla:
