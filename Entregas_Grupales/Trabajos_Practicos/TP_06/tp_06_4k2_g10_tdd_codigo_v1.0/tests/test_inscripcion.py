@@ -38,8 +38,13 @@ def cupos():
 
 
 @pytest.fixture
-def servicio(cupos):
-    return ServicioInscripcion(cupos)
+def ahora():
+    return datetime(2026, 10, 20, 8, 0)
+
+
+@pytest.fixture
+def servicio(cupos, ahora):
+    return ServicioInscripcion(cupos, reloj=lambda: ahora)
 
 
 def test_inscripcion_exitosa_con_cupo_horario_datos_y_terminos(servicio):
@@ -152,6 +157,15 @@ def test_horario_con_parque_cerrado_o_actividad_no_disponible_falla(
         servicio, horario):
     with pytest.raises(HorarioNoDisponibleError):
         servicio.inscribir(**datos_validos(horario=horario))
+
+
+@pytest.mark.parametrize("ahora", [
+    datetime(2026, 10, 21, 10, 0),   # el turno ya empezo
+    datetime(2026, 10, 21, 11, 30),  # el turno ya termino
+])
+def test_horario_que_ya_comenzo_falla(servicio):
+    with pytest.raises(HorarioNoDisponibleError):
+        servicio.inscribir(**datos_validos(horario=MIERCOLES_10))
 
 
 def test_sin_aceptar_terminos_y_condiciones_falla(servicio):
