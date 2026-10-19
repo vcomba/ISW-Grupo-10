@@ -78,6 +78,16 @@ def test_sin_aceptar_terminos_y_condiciones_falla(servicio):
         servicio.inscribir(**datos_validos(acepta_terminos=False))
 
 
+@pytest.mark.parametrize("actividad", ["Safari", "Jardin\u00eda"])
+def test_sin_talle_en_actividad_que_no_lo_requiere_pasa(servicio, actividad):
+    visitantes = [Visitante("Ana Perez", "30123456", 25)]
+
+    inscripcion = servicio.inscribir(**datos_validos(actividad=actividad,
+                                                     visitantes=visitantes))
+
+    assert inscripcion.actividad == actividad
+
+
 @pytest.mark.parametrize("actividad", ["Tirolesa", "Palestra"])
 def test_sin_talle_requerido_por_la_actividad_falla(servicio, actividad):
     visitantes = [Visitante("Ana Perez", "30123456", 25)]
