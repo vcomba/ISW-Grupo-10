@@ -86,3 +86,18 @@ def test_si_falla_el_envio_del_correo_se_informa_y_no_se_confirma(
 
     assert respuesta.status_code == 502
     assert "correo" in respuesta.get_data(as_text=True)
+
+
+def test_sin_variables_smtp_se_muestra_vista_previa_del_correo(
+        monkeypatch):
+    for variable in ("SMTP_HOST", "SMTP_PORT", "SMTP_USER", "SMTP_PASS"):
+        monkeypatch.delenv(variable, raising=False)
+    cliente = crear_app().test_client()
+
+    respuesta = cliente.post("/inscribir",
+                             data=formulario(fecha="2030-01-02"))
+
+    html = respuesta.get_data(as_text=True)
+    assert respuesta.status_code == 200
+    assert "Modo demostraci" in html
+    assert "data:image/png;base64," in html
