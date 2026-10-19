@@ -9,6 +9,7 @@ from inscripcion_actividades import (
     DatosVisitanteInvalidosError,
     EdadMinimaError,
     HorarioNoDisponibleError,
+    ServicioInscripcion,
     SinCupoError,
     TallaRequeridaError,
     TerminosNoAceptadosError,
@@ -115,6 +116,22 @@ def test_cuando_se_completa_el_cupo_la_siguiente_inscripcion_falla(servicio):
 
     with pytest.raises(SinCupoError):
         servicio.inscribir(**datos_validos())
+
+
+class CorreoCaido:
+    def enviar(self, mensaje):
+        raise ConnectionError("servidor de correo no disponible")
+
+
+def test_si_falla_el_envio_del_correo_no_se_ocupan_lugares(
+        cupos, generador_qr, ahora):
+    servicio = ServicioInscripcion(cupos, CorreoCaido(), generador_qr,
+                                   reloj=lambda: ahora)
+
+    with pytest.raises(ConnectionError):
+        servicio.inscribir(**datos_validos())
+
+    assert cupos.ocupados("Safari", MIERCOLES_10) == 0
 
 
 def test_inscripcion_rechazada_no_ocupa_lugares(servicio, cupos):

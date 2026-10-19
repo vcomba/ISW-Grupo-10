@@ -36,11 +36,16 @@ def correo():
 
 
 @pytest.fixture
+def generador_qr():
+    return GeneradorQRFalso()
+
+
+@pytest.fixture
 def ahora():
     return datetime(2026, 10, 20, 8, 0)
 
 
 @pytest.fixture
-def servicio(cupos, correo, ahora):
-    return ServicioInscripcion(cupos, correo, GeneradorQRFalso(),
+def servicio(cupos, correo, generador_qr, ahora):
+    return ServicioInscripcion(cupos, correo, generador_qr,
                                reloj=lambda: ahora)
