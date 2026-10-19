@@ -158,7 +158,18 @@ def test_inscripcion_exitosa_envia_un_correo_con_la_informacion_y_un_qr(
     assert "21/10/2026 10:00" in mensaje.cuerpo
     assert "Ana Perez" in mensaje.cuerpo
     assert inscripcion.codigo in mensaje.cuerpo
-    assert mensaje.qr == f"QR[{inscripcion.codigo}]".encode()
+    assert mensaje.qr.startswith(b"QR[")
+
+
+def test_el_qr_contiene_los_datos_de_la_inscripcion(servicio, correo):
+    inscripcion = servicio.inscribir(**datos_validos())
+
+    contenido = correo.enviados[0].qr.decode()
+    assert inscripcion.codigo in contenido
+    assert "Safari" in contenido
+    assert "21/10/2026 10:00" in contenido
+    assert "Ana Perez" in contenido
+    assert "30123456" in contenido
 
 
 def test_inscripcion_rechazada_no_envia_correo(servicio, correo):
