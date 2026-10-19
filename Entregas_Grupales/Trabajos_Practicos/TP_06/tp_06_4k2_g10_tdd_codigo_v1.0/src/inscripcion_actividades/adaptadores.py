@@ -11,7 +11,7 @@ class GeneradorQRPNG:
     """Genera el codigo QR como imagen PNG."""
 
     def generar(self, contenido):
-        imagen = qrcode.make(contenido)
+        imagen = qrcode.make(contenido.encode("utf-8"))
         salida = io.BytesIO()
         imagen.save(salida, format="PNG")
         return salida.getvalue()
