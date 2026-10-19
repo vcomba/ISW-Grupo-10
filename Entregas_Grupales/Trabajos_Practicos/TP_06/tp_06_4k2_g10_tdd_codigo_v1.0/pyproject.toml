@@ -1,0 +1,10 @@
+[project]
+name = "inscripcion_actividades"
+version = "1.0"
+description = "TP6 TDD - US Inscribirme a actividad (EcoHarmony Park) - 4K2 Grupo 10"
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+addopts = "-v"
