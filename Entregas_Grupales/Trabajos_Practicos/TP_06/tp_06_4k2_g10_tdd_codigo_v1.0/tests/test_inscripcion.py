@@ -6,6 +6,7 @@ from inscripcion_actividades import (
     ActividadInexistenteError,
     CantidadPersonasInvalidaError,
     DatosVisitanteInvalidosError,
+    EdadMinimaError,
     HorarioNoDisponibleError,
     RepositorioCuposEnMemoria,
     ServicioInscripcion,
@@ -109,6 +110,34 @@ def test_datos_del_visitante_incompletos_o_invalidos_falla(
         servicio, visitante):
     with pytest.raises(DatosVisitanteInvalidosError):
         servicio.inscribir(**datos_validos(visitantes=[visitante]))
+
+
+@pytest.mark.parametrize("actividad, edad", [
+    ("Tirolesa", 7),
+    ("Palestra", 11),
+])
+def test_visitante_menor_a_la_edad_minima_de_la_actividad_falla(
+        servicio, actividad, edad):
+    visitantes = [Visitante("Leo Perez", "50123456", edad, talla="S")]
+
+    with pytest.raises(EdadMinimaError):
+        servicio.inscribir(**datos_validos(actividad=actividad,
+                                           visitantes=visitantes))
+
+
+@pytest.mark.parametrize("actividad, edad", [
+    ("Tirolesa", 8),
+    ("Palestra", 12),
+    ("Safari", 3),
+])
+def test_visitante_con_la_edad_minima_de_la_actividad_pasa(
+        servicio, actividad, edad):
+    visitantes = [Visitante("Leo Perez", "50123456", edad, talla="S")]
+
+    inscripcion = servicio.inscribir(**datos_validos(actividad=actividad,
+                                                     visitantes=visitantes))
+
+    assert inscripcion.actividad == actividad
 
 
 @pytest.mark.parametrize("horario", [
