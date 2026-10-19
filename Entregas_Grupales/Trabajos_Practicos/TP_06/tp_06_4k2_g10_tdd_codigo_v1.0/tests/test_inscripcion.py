@@ -4,6 +4,7 @@ import pytest
 
 from inscripcion_actividades.inscripcion import (
     ActividadInexistenteError,
+    CantidadPersonasInvalidaError,
     HorarioNoDisponibleError,
     RepositorioCuposEnMemoria,
     ServicioInscripcion,
@@ -57,6 +58,40 @@ def test_actividad_sin_cupo_para_el_horario_falla(servicio, cupos):
 
     with pytest.raises(SinCupoError):
         servicio.inscribir(**datos_validos())
+
+
+def grupo(cantidad):
+    return [Visitante(f"Visitante {i}", f"3000000{i}", 30)
+            for i in range(cantidad)]
+
+
+def test_cantidad_de_personas_que_supera_el_cupo_restante_falla(
+        servicio, cupos):
+    cupos.registrar("Safari", MIERCOLES_10, 5)
+
+    with pytest.raises(SinCupoError):
+        servicio.inscribir(**datos_validos(cantidad_personas=4,
+                                           visitantes=grupo(4)))
+
+
+def test_cantidad_de_personas_igual_al_cupo_restante_pasa(servicio, cupos):
+    cupos.registrar("Safari", MIERCOLES_10, 5)
+
+    inscripcion = servicio.inscribir(**datos_validos(cantidad_personas=3,
+                                                     visitantes=grupo(3)))
+
+    assert inscripcion.cantidad_personas == 3
+
+
+@pytest.mark.parametrize("cantidad, visitantes", [
+    (0, []),
+    (2, grupo(1)),
+    (1, grupo(2)),
+])
+def test_cantidad_de_personas_invalida_falla(servicio, cantidad, visitantes):
+    with pytest.raises(CantidadPersonasInvalidaError):
+        servicio.inscribir(**datos_validos(cantidad_personas=cantidad,
+                                           visitantes=visitantes))
 
 
 @pytest.mark.parametrize("horario", [
