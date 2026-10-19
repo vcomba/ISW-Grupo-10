@@ -46,6 +46,16 @@ class Inscripcion:
     actividad: str
     horario: datetime
     cantidad_personas: int
+    codigo: str = ""
+    visitantes: tuple = ()
+
+
+@dataclass(frozen=True)
+class Mensaje:
+    destinatario: str
+    asunto: str
+    cuerpo: str
+    qr: bytes
 
 
 CATALOGO = {

@@ -30,5 +30,9 @@ class EdadMinimaError(InscripcionError):
     pass
 
 
+class CorreoInvalidoError(InscripcionError):
+    pass
+
+
 class TerminosNoAceptadosError(InscripcionError):
     pass

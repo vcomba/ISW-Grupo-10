@@ -4,6 +4,7 @@ from inscripcion_actividades.calendario import CalendarioParque
 from inscripcion_actividades.errores import (
     ActividadInexistenteError,
     CantidadPersonasInvalidaError,
+    CorreoInvalidoError,
     DatosVisitanteInvalidosError,
     EdadMinimaError,
     HorarioNoDisponibleError,
@@ -29,6 +30,7 @@ __all__ = [
     "Actividad",
     "CalendarioParque",
     "CantidadPersonasInvalidaError",
+    "CorreoInvalidoError",
     "DatosVisitanteInvalidosError",
     "EdadMinimaError",
     "HorarioNoDisponibleError",
