@@ -102,6 +102,28 @@ def test_cantidad_de_personas_igual_al_cupo_restante_pasa(servicio, cupos):
     assert inscripcion.cantidad_personas == 3
 
 
+def test_inscripcion_exitosa_ocupa_los_lugares_del_horario(servicio, cupos):
+    servicio.inscribir(**datos_validos(cantidad_personas=3,
+                                       visitantes=grupo(3)))
+
+    assert cupos.ocupados("Safari", MIERCOLES_10) == 3
+
+
+def test_cuando_se_completa_el_cupo_la_siguiente_inscripcion_falla(servicio):
+    servicio.inscribir(**datos_validos(cantidad_personas=8,
+                                       visitantes=grupo(8)))
+
+    with pytest.raises(SinCupoError):
+        servicio.inscribir(**datos_validos())
+
+
+def test_inscripcion_rechazada_no_ocupa_lugares(servicio, cupos):
+    with pytest.raises(TerminosNoAceptadosError):
+        servicio.inscribir(**datos_validos(acepta_terminos=False))
+
+    assert cupos.ocupados("Safari", MIERCOLES_10) == 0
+
+
 @pytest.mark.parametrize("cantidad, visitantes", [
     (0, []),
     (2, grupo(1)),
