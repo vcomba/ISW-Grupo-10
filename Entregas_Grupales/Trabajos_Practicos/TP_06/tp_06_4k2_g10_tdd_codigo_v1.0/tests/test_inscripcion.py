@@ -8,6 +8,7 @@ from inscripcion_actividades.inscripcion import (
     RepositorioCuposEnMemoria,
     ServicioInscripcion,
     SinCupoError,
+    TerminosNoAceptadosError,
     Visitante,
 )
 
@@ -69,3 +70,8 @@ def test_horario_con_parque_cerrado_o_actividad_no_disponible_falla(
         servicio, horario):
     with pytest.raises(HorarioNoDisponibleError):
         servicio.inscribir(**datos_validos(horario=horario))
+
+
+def test_sin_aceptar_terminos_y_condiciones_falla(servicio):
+    with pytest.raises(TerminosNoAceptadosError):
+        servicio.inscribir(**datos_validos(acepta_terminos=False))
