@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block contenido %}
+<section class="tarjeta">
+  <h2>Inscripci&oacute;n confirmada</h2>
+  <p><strong>{{ inscripcion.actividad }}</strong> &middot;
+     {{ inscripcion.horario.strftime('%d/%m/%Y %H:%M') }} hs &middot;
+     {{ inscripcion.cantidad_personas }} persona{{ 's' if inscripcion.cantidad_personas > 1 }}</p>
+  <p>C&oacute;digo de inscripci&oacute;n: <strong>{{ inscripcion.codigo }}</strong></p>
+  <img class="qr" src="data:image/png;base64,{{ qr_base64 }}" alt="C&oacute;digo QR de la inscripci&oacute;n">
+  {% if envia_correo %}
+  <p class="aviso">Enviamos el correo con el QR a <strong>{{ mensaje.destinatario }}</strong>.</p>
+  {% else %}
+  <p class="aviso">Modo demostraci&oacute;n: este es el correo que recibir&iacute;a
+    <strong>{{ mensaje.destinatario }}</strong> (el env&iacute;o real no est&aacute; configurado).</p>
+  {% endif %}
+</section>
+
+<section class="tarjeta">
+  <h2>Correo de confirmaci&oacute;n</h2>
+  <p><strong>Para:</strong> {{ mensaje.destinatario }}<br>
+     <strong>Asunto:</strong> {{ mensaje.asunto }}</p>
+  <pre class="correo">{{ mensaje.cuerpo }}</pre>
+  <p class="ayuda">Adjunto: qr_inscripcion.png</p>
+</section>
+
+<a class="volver" href="/">&larr; Nueva inscripci&oacute;n</a>
+{% endblock %}

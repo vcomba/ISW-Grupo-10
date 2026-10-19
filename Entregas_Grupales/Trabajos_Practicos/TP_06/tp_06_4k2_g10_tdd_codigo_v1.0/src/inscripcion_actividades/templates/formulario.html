@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block contenido %}
+{% if error %}<div class="error" role="alert">{{ error }}</div>{% endif %}
+
+<form method="post" action="/inscribir" id="formulario">
+  <section class="tarjeta">
+    <h2>1. Actividad y horario</h2>
+    <label for="actividad">Actividad</label>
+    <select id="actividad" name="actividad" required>
+      {% for a in actividades %}
+      <option value="{{ a.nombre }}" data-talla="{{ 1 if a.requiere_talla else 0 }}"
+              data-edad="{{ a.edad_minima }}"
+              {% if valores.get('actividad') == a.nombre %}selected{% endif %}>
+        {{ a.nombre }} &middot; cupo {{ a.cupo_maximo }} por turno{% if a.requiere_talla %} &middot; requiere talle{% endif %}{% if a.edad_minima %} &middot; desde {{ a.edad_minima }} a&ntilde;os{% endif %}
+      </option>
+      {% endfor %}
+    </select>
+    <div class="fila">
+      <div>
+        <label for="fecha">Fecha</label>
+        <input type="date" id="fecha" name="fecha" min="{{ hoy }}" required
+               value="{{ valores.get('fecha', '') }}">
+      </div>
+      <div>
+        <label for="hora">Turno</label>
+        <select id="hora" name="hora" required>
+          {% for h in horas %}
+          <option value="{{ h }}" {% if valores.get('hora') == h|string %}selected{% endif %}>
+            {{ '%02d'|format(h) }}:00 a {{ '%02d'|format(h + 1) }}:00
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <p class="ayuda">El parque cierra los lunes, el 25/12 y el 1/1. Cada actividad dura una hora.</p>
+  </section>
+
+  <section class="tarjeta">
+    <h2>2. Participantes</h2>
+    <label for="cantidad">Cantidad de personas</label>
+    <input type="number" id="cantidad" name="cantidad" min="1" max="{{ maximo_personas }}" required
+           value="{{ valores.get('cantidad', '1') }}">
+    <div id="participantes"></div>
+  </section>
+
+  <section class="tarjeta">
+    <h2>3. Contacto y t&eacute;rminos</h2>
+    <label for="correo">Correo electr&oacute;nico (te enviamos la inscripci&oacute;n con el QR)</label>
+    <input type="email" id="correo" name="correo" required maxlength="254" value="{{ valores.get('correo', '') }}">
+    <label>T&eacute;rminos y condiciones de <span id="nombre-actividad"></span></label>
+    <ul class="terminos">
+      {% for t in terminos_generales %}<li>{{ t }}</li>{% endfor %}
+      <li id="termino-especifico"></li>
+    </ul>
+    <label class="check">
+      <input type="checkbox" name="acepta_terminos" {% if valores.get('acepta_terminos') %}checked{% endif %}>
+      Acepto los t&eacute;rminos y condiciones de la actividad
+    </label>
+  </section>
+
+  {% if not envia_correo %}
+  <p class="aviso">Modo demostraci&oacute;n: el env&iacute;o real de correos no est&aacute; configurado,
+    se mostrar&aacute; una vista previa del correo con el QR.</p>
+  {% endif %}
+  <button type="submit">Confirmar inscripci&oacute;n</button>
+</form>
+
+<script>
+  const especificos = {{ terminos_especificos|tojson }};
+  const tallas = {{ tallas|list|tojson }};
+  const previos = {{ valores|tojson if valores else '{}' }};
+  const selActividad = document.getElementById('actividad');
+  const inputCantidad = document.getElementById('cantidad');
+  const contenedor = document.getElementById('participantes');
+
+  function campo(etiqueta, html) {
+    return '<div><label>' + etiqueta + '</label>' + html + '</div>';
+  }
+  function valor(nombre) {
+    const actual = document.querySelector('[name="' + nombre + '"]');
+    if (actual) return actual.value;
+    return previos[nombre] || '';
+  }
+  function escapar(texto) {
+    return String(texto).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  }
+  function dibujar() {
+    const opcion = selActividad.selectedOptions[0];
+    const requiereTalla = opcion.dataset.talla === '1';
+    const cantidad = Math.max(1, Math.min({{ maximo_personas }}, parseInt(inputCantidad.value || '1', 10)));
+    let html = '';
+    for (let i = 0; i < cantidad; i++) {
+      const talla = valor('talla_' + i);
+      const opciones = ['<option value="">Elegir talle</option>'].concat(
+        tallas.map(t => '<option' + (t === talla ? ' selected' : '') + '>' + t + '</option>')).join('');
+      html += '<div class="participante"><h3>Persona ' + (i + 1) + '</h3>' +
+        campo('Nombre y apellido', '<input name="nombre_' + i + '" required minlength="2" maxlength="60"' +
+          ' pattern="[A-Za-z\u00C0-\u00FF&#39; .\\-]{2,60}" title="Solo letras, espacios, acentos, ap\u00f3strofo o guion (2 a 60 caracteres)"' +
+          ' value="' + escapar(valor('nombre_' + i)) + '">') +
+        '<div class="fila">' +
+        campo('DNI', '<input name="dni_' + i + '" inputmode="numeric" required maxlength="8" pattern="[0-9]{7,8}"' +
+          ' title="7 u 8 n\u00fameros, sin puntos" value="' + escapar(valor('dni_' + i)) + '">') +
+        campo('Edad', '<input name="edad_' + i + '" type="number" min="0" max="120" step="1" required value="' + escapar(valor('edad_' + i)) + '">') +
+        '</div>' +
+        (requiereTalla ? campo('Talle de vestimenta', '<select name="talla_' + i + '" required>' + opciones + '</select>') : '') +
+        '</div>';
+    }
+    contenedor.innerHTML = html;
+    document.getElementById('nombre-actividad').textContent = opcion.value;
+    document.getElementById('termino-especifico').textContent = especificos[opcion.value] || '';
+  }
+  selActividad.addEventListener('change', dibujar);
+  inputCantidad.addEventListener('input', dibujar);
+  dibujar();
+</script>
+{% endblock %}
