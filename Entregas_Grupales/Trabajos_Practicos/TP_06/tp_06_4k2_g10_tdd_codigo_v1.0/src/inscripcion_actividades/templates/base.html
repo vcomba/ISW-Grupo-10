@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EcoHarmony Park &middot; Inscripci&oacute;n a actividades</title>
+  <style>
+    :root {
+      --verde: #1f6f4a; --verde-claro: #e7f3ec; --texto: #1d2a24;
+      --gris: #5c6b63; --borde: #cfdcd4; --error: #a12a2a; --fondo: #f6f8f7;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+           color: var(--texto); background: var(--fondo); line-height: 1.45; }
+    header { background: var(--verde); color: #fff; padding: 18px 16px; }
+    header h1 { margin: 0; font-size: 1.25rem; }
+    header p { margin: 2px 0 0; opacity: .85; font-size: .9rem; }
+    main { max-width: 720px; margin: 0 auto; padding: 16px; }
+    .tarjeta { background: #fff; border: 1px solid var(--borde); border-radius: 10px;
+               padding: 16px; margin-bottom: 14px; }
+    .tarjeta h2 { margin: 0 0 10px; font-size: 1.05rem; }
+    label { display: block; font-weight: 600; font-size: .9rem; margin: 10px 0 4px; }
+    input, select { width: 100%; padding: 10px; border: 1px solid var(--borde); border-radius: 8px;
+                    font-size: 1rem; background: #fff; }
+    input:focus, select:focus { outline: 2px solid var(--verde); border-color: var(--verde); }
+    .fila { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .participante { border-top: 1px dashed var(--borde); padding-top: 8px; margin-top: 10px; }
+    .participante:first-child { border-top: 0; margin-top: 0; padding-top: 0; }
+    .participante h3 { margin: 4px 0; font-size: .95rem; color: var(--verde); }
+    .ayuda { color: var(--gris); font-size: .85rem; margin: 4px 0 0; }
+    .check { display: flex; gap: 10px; align-items: flex-start; font-weight: 400; }
+    .check input { width: auto; margin-top: 4px; }
+    ul.terminos { margin: 6px 0 0; padding-left: 18px; color: var(--gris); font-size: .88rem; }
+    button { width: 100%; padding: 14px; border: 0; border-radius: 8px; background: var(--verde);
+             color: #fff; font-size: 1.05rem; font-weight: 600; cursor: pointer; }
+    button:hover { filter: brightness(1.08); }
+    .error { background: #fbeaea; border: 1px solid #e3b4b4; color: var(--error); padding: 12px;
+             border-radius: 8px; margin-bottom: 14px; }
+    .aviso { background: var(--verde-claro); border-radius: 8px; padding: 10px 12px; font-size: .88rem; }
+    .qr { display: block; margin: 8px auto; width: 220px; height: 220px; image-rendering: pixelated; }
+    pre.correo { white-space: pre-wrap; background: var(--fondo); border: 1px solid var(--borde);
+                 border-radius: 8px; padding: 12px; font-size: .9rem; }
+    a.volver { display: inline-block; margin-top: 8px; color: var(--verde); font-weight: 600; }
+    @media (max-width: 480px) { .fila { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>EcoHarmony Park</h1>
+    <p>Inscribirme a actividad &middot; ISW 2026 &middot; 4K2 Grupo 10</p>
+  </header>
+  <main>
+    {% block contenido %}{% endblock %}
+  </main>
+</body>
+</html>
