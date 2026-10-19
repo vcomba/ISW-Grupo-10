@@ -39,7 +39,7 @@ def test_la_pagina_principal_muestra_el_formulario_con_las_actividades(
 
     html = respuesta.get_data(as_text=True)
     assert respuesta.status_code == 200
-    for actividad in ("Tirolesa", "Safari", "Palestra", "Jardin\u00eda"):
+    for actividad in ("Tirolesa", "Safari", "Palestra", "Jardiner\u00eda"):
         assert actividad in html
 
 

@@ -72,6 +72,6 @@ CATALOGO = {
         Actividad("Safari", cupo_maximo=8),
         Actividad("Palestra", cupo_maximo=12, requiere_talla=True,
                   edad_minima=12),
-        Actividad("Jardin\u00eda", cupo_maximo=12),
+        Actividad("Jardiner\u00eda", cupo_maximo=12),
     )
 }

@@ -34,7 +34,7 @@ def test_pu2_actividad_sin_cupo_para_el_horario_falla(servicio, cupos):
         servicio.inscribir(**datos_validos())
 
 
-@pytest.mark.parametrize("actividad", ["Safari", "Jardin\u00eda"])
+@pytest.mark.parametrize("actividad", ["Safari", "Jardiner\u00eda"])
 def test_pu3_sin_talle_en_actividad_que_no_lo_requiere_pasa(
         servicio, actividad):
     visitantes = [Visitante("Ana Perez", "30123456", 25)]

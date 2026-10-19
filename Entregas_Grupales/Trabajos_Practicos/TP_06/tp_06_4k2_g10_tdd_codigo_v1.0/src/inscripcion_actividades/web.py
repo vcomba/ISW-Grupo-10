@@ -79,8 +79,8 @@ TERMINOS_ESPECIFICOS = {
               "animales.",
     "Palestra": "Uso obligatorio de arn\u00e9s e indumentaria provista por "
                 "el parque. Edad m\u00ednima: 12 a\u00f1os.",
-    "Jardin\u00eda": "Uso de guantes provistos por el parque y de "
-                     "herramientas bajo supervisi\u00f3n.",
+    "Jardiner\u00eda": "Uso de guantes provistos por el parque y de "
+                       "herramientas bajo supervisi\u00f3n.",
 }
 
 
