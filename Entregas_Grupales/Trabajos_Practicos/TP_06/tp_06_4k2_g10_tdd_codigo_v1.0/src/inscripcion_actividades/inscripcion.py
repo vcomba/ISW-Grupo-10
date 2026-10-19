@@ -48,6 +48,10 @@ class TallaRequeridaError(InscripcionError):
     pass
 
 
+class CantidadPersonasInvalidaError(InscripcionError):
+    pass
+
+
 @dataclass
 class Visitante:
     nombre: str
@@ -86,7 +90,10 @@ class ServicioInscripcion:
             raise ActividadInexistenteError(actividad)
         if not self._calendario.turno_disponible(horario):
             raise HorarioNoDisponibleError(horario)
-        if self._cupos_disponibles(CATALOGO[actividad], horario) <= 0:
+        if cantidad_personas < 1 or cantidad_personas != len(visitantes):
+            raise CantidadPersonasInvalidaError(cantidad_personas)
+        if (self._cupos_disponibles(CATALOGO[actividad], horario)
+                < cantidad_personas):
             raise SinCupoError(actividad)
         if not acepta_terminos:
             raise TerminosNoAceptadosError(actividad)
