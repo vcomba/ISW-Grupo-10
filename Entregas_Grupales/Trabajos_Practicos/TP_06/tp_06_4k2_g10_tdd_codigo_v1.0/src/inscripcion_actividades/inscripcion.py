@@ -1,8 +1,22 @@
 from dataclasses import dataclass
 from datetime import datetime
 
-ACTIVIDADES = ["Tirolesa", "Safari", "Palestra", "Jardineria"]
-CUPO_MAXIMO = {"Tirolesa": 10, "Safari": 8, "Palestra": 12, "Jardineria": 12}
+
+@dataclass(frozen=True)
+class Actividad:
+    nombre: str
+    cupo_maximo: int
+
+
+CATALOGO = {
+    actividad.nombre: actividad
+    for actividad in (
+        Actividad("Tirolesa", cupo_maximo=10),
+        Actividad("Safari", cupo_maximo=8),
+        Actividad("Palestra", cupo_maximo=12),
+        Actividad("Jardin\u00eda", cupo_maximo=12),
+    )
+}
 
 
 class InscripcionError(Exception):
@@ -49,10 +63,12 @@ class ServicioInscripcion:
 
     def inscribir(self, actividad, horario, cantidad_personas, visitantes,
                   acepta_terminos, correo):
-        if actividad not in ACTIVIDADES:
+        if actividad not in CATALOGO:
             raise ActividadInexistenteError(actividad)
-        disponibles = (CUPO_MAXIMO[actividad]
-                       - self._cupos.ocupados(actividad, horario))
-        if disponibles <= 0:
+        if self._cupos_disponibles(CATALOGO[actividad], horario) <= 0:
             raise SinCupoError(actividad)
         return Inscripcion(actividad, horario, cantidad_personas)
+
+    def _cupos_disponibles(self, actividad, horario):
+        return (actividad.cupo_maximo
+                - self._cupos.ocupados(actividad.nombre, horario))
