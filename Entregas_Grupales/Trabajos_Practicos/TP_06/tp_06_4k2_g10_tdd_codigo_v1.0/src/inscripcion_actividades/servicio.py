@@ -47,6 +47,7 @@ class ServicioInscripcion:
         inscripcion = Inscripcion(actividad, horario, cantidad_personas,
                                   generar_codigo(), tuple(visitantes))
         self._notificar(inscripcion, correo)
+        self._cupos.registrar(actividad, horario, cantidad_personas)
         return inscripcion
 
     def _buscar_actividad(self, nombre):
