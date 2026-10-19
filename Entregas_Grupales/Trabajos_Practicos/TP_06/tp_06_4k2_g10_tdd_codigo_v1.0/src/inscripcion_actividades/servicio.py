@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from inscripcion_actividades.calendario import CalendarioParque
 from inscripcion_actividades.errores import (
     ActividadInexistenteError,
@@ -11,10 +13,11 @@ from inscripcion_actividades.modelo import CATALOGO, Inscripcion
 
 class ServicioInscripcion:
     def __init__(self, cupos, calendario=CalendarioParque(),
-                 catalogo=CATALOGO):
+                 catalogo=CATALOGO, reloj=datetime.now):
         self._cupos = cupos
         self._calendario = calendario
         self._catalogo = catalogo
+        self._reloj = reloj
 
     def inscribir(self, actividad, horario, cantidad_personas, visitantes,
                   acepta_terminos, correo):
@@ -36,6 +39,8 @@ class ServicioInscripcion:
 
     def _validar_horario(self, horario):
         if not self._calendario.turno_disponible(horario):
+            raise HorarioNoDisponibleError(horario)
+        if horario <= self._reloj():
             raise HorarioNoDisponibleError(horario)
 
     def _validar_cantidad(self, actividad, horario, cantidad, visitantes):
