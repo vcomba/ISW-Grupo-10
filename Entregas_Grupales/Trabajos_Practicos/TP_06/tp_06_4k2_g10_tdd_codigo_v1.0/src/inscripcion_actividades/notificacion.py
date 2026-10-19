@@ -4,7 +4,9 @@ from typing import Protocol
 from inscripcion_actividades.errores import CorreoInvalidoError
 from inscripcion_actividades.modelo import Mensaje
 
-FORMATO_CORREO = re.compile(r"[^@\s]+@[^@\s]+\.[^@\s]+")
+FORMATO_CORREO = re.compile(
+    r"[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}")
+LARGO_MAXIMO_CORREO = 254
 
 
 class ServicioCorreo(Protocol):
@@ -16,7 +18,8 @@ class GeneradorQR(Protocol):
 
 
 def validar_correo(direccion):
-    if not FORMATO_CORREO.fullmatch(direccion):
+    if (len(direccion) > LARGO_MAXIMO_CORREO
+            or not FORMATO_CORREO.fullmatch(direccion)):
         raise CorreoInvalidoError(direccion)
 
 

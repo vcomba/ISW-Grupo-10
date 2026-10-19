@@ -1,3 +1,4 @@
+import re
 from dataclasses import dataclass
 from datetime import datetime
 
@@ -9,6 +10,11 @@ from inscripcion_actividades.errores import (
 
 TALLAS = ("XS", "S", "M", "L", "XL", "XXL")
 EDAD_MAXIMA = 120
+LARGO_NOMBRE = (2, 60)
+# Palabras de letras (con acentos) separadas por espacio, apostrofo, guion
+# o punto de abreviatura; sin numeros ni simbolos.
+FORMATO_NOMBRE = re.compile(r"[^\W\d_]+(?:[ '\-.]+[^\W\d_]+)*\.?")
+FORMATO_DNI = re.compile(r"[0-9]{7,8}")
 
 
 @dataclass(frozen=True)
@@ -21,9 +27,12 @@ class Visitante:
     talla: str | None = None
 
     def validar_datos(self):
-        if not self.nombre.strip():
+        minimo, maximo = LARGO_NOMBRE
+        nombre = self.nombre.strip()
+        if not (minimo <= len(nombre) <= maximo
+                and FORMATO_NOMBRE.fullmatch(nombre)):
             raise DatosVisitanteInvalidosError("nombre")
-        if not (self.dni.isdigit() and 7 <= len(self.dni) <= 8):
+        if not FORMATO_DNI.fullmatch(self.dni):
             raise DatosVisitanteInvalidosError("dni")
         if not 0 <= self.edad <= EDAD_MAXIMA:
             raise DatosVisitanteInvalidosError("edad")

@@ -16,6 +16,7 @@ from inscripcion_actividades.errores import (
     CantidadPersonasInvalidaError,
     CorreoInvalidoError,
     DatosVisitanteInvalidosError,
+    DniRepetidoError,
     EdadMinimaError,
     HorarioNoDisponibleError,
     InscripcionError,
@@ -47,9 +48,11 @@ MENSAJES = {
         "No hay cupos suficientes para esa actividad en el horario "
         "elegido."),
     DatosVisitanteInvalidosError: (
-        "Revis\u00e1 los datos de los participantes: el nombre es "
-        "obligatorio, el DNI debe tener 7 u 8 d\u00edgitos sin puntos y la "
-        "edad debe ser v\u00e1lida."),
+        "Revis\u00e1 los datos de los participantes: el nombre debe tener "
+        "entre 2 y 60 letras (se permiten espacios, acentos, ap\u00f3strofo "
+        "y guion), el DNI 7 u 8 d\u00edgitos sin puntos y la edad entre 0 y "
+        "120 a\u00f1os."),
+    DniRepetidoError: "Cada participante debe tener un DNI distinto.",
     TallaRequeridaError: (
         "Esta actividad requiere indicar el talle de vestimenta de cada "
         "participante."),

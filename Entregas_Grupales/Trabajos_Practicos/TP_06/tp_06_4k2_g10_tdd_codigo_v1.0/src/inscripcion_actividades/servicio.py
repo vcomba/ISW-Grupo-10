@@ -5,6 +5,7 @@ from inscripcion_actividades.calendario import CalendarioParque
 from inscripcion_actividades.errores import (
     ActividadInexistenteError,
     CantidadPersonasInvalidaError,
+    DniRepetidoError,
     HorarioNoDisponibleError,
     SinCupoError,
     TerminosNoAceptadosError,
@@ -50,9 +51,7 @@ class ServicioInscripcion:
         self._validar_horario(horario)
         self._validar_cantidad(elegida, horario, cantidad_personas,
                                visitantes)
-        for visitante in visitantes:
-            visitante.validar_datos()
-            elegida.validar_participante(visitante)
+        self._validar_visitantes(elegida, visitantes)
         if not acepta_terminos:
             raise TerminosNoAceptadosError(actividad)
         validar_correo(correo)
@@ -79,6 +78,14 @@ class ServicioInscripcion:
             raise CantidadPersonasInvalidaError(cantidad)
         if self._cupos_disponibles(actividad, horario) < cantidad:
             raise SinCupoError(actividad.nombre)
+
+    def _validar_visitantes(self, actividad, visitantes):
+        for visitante in visitantes:
+            visitante.validar_datos()
+            actividad.validar_participante(visitante)
+        dnis = [visitante.dni for visitante in visitantes]
+        if len(set(dnis)) != len(dnis):
+            raise DniRepetidoError(actividad.nombre)
 
     def _cupos_disponibles(self, actividad, horario):
         return (actividad.cupo_maximo

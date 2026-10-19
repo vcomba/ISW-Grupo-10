@@ -22,6 +22,10 @@ class DatosVisitanteInvalidosError(InscripcionError):
     pass
 
 
+class DniRepetidoError(InscripcionError):
+    pass
+
+
 class TallaRequeridaError(InscripcionError):
     pass
 
