@@ -65,6 +65,27 @@ def test_inscripcion_rechazada_muestra_el_motivo(cliente, correo):
     assert correo.enviados == []
 
 
+def test_dni_repetido_muestra_el_motivo(cliente, correo):
+    respuesta = cliente.post("/inscribir", data=formulario(
+        cantidad="2", nombre_1="Juan Gomez", dni_1="30123456", edad_1="30"))
+
+    assert respuesta.status_code == 422
+    assert "DNI distinto" in respuesta.get_data(as_text=True)
+    assert correo.enviados == []
+
+
+@pytest.mark.parametrize("campo, valor", [
+    ("edad_0", "25.5"), ("edad_0", "-"), ("cantidad", "1e3"),
+    ("hora", "25"), ("fecha", "2026-02-30"), ("actividad", "Bungee"),
+])
+def test_valores_raros_en_el_formulario_se_rechazan(cliente, correo, campo,
+                                                    valor):
+    respuesta = cliente.post("/inscribir", data=formulario(**{campo: valor}))
+
+    assert respuesta.status_code == 422
+    assert correo.enviados == []
+
+
 def test_formulario_incompleto_muestra_error_sin_romper(cliente):
     respuesta = cliente.post("/inscribir", data=formulario(edad_0="abc"))
 

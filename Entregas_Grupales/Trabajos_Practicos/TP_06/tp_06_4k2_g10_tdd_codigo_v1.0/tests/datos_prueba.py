@@ -20,5 +20,5 @@ def datos_validos(**cambios):
 
 
 def grupo(cantidad):
-    return [Visitante(f"Visitante {i}", f"3000000{i}", 30)
+    return [Visitante(f"Visitante {chr(ord('A') + i)}", str(30000000 + i), 30)
             for i in range(cantidad)]

@@ -9,6 +9,7 @@ from inscripcion_actividades import (
     CantidadPersonasInvalidaError,
     CorreoInvalidoError,
     DatosVisitanteInvalidosError,
+    DniRepetidoError,
     EdadMinimaError,
     HorarioNoDisponibleError,
     ServicioInscripcion,
@@ -101,11 +102,44 @@ def test_cantidad_de_personas_invalida_falla(servicio, cantidad, visitantes):
     Visitante("Ana Perez", "301234567", 25),
     Visitante("Ana Perez", "30123456", -1),
     Visitante("Ana Perez", "30123456", 121),
+    Visitante("123", "30123456", 25),
+    Visitante("Ana P3rez", "30123456", 25),
+    Visitante("<script>alert(1)</script>", "30123456", 25),
+    Visitante("@#$%", "30123456", 25),
+    Visitante("A", "30123456", 25),
+    Visitante("A" * 61, "30123456", 25),
+    Visitante("Ana Perez", "\u0663\u0660\u0661\u0662\u0663\u0664\u0665\u0666",
+              25),
+    Visitante("Ana Perez", "\u00b2" * 8, 25),
+    Visitante("Ana Perez", " 30123456", 25),
 ])
 def test_datos_del_visitante_incompletos_o_invalidos_falla(
         servicio, visitante):
     with pytest.raises(DatosVisitanteInvalidosError):
         servicio.inscribir(**datos_validos(visitantes=[visitante]))
+
+
+@pytest.mark.parametrize("nombre", [
+    "Ana Perez",
+    "Jos\u00e9 Mu\u00f1oz",
+    "Mar\u00eda Jos\u00e9 O'Connor",
+    "Ana-Laura D\u00edaz",
+])
+def test_nombres_con_acentos_apostrofo_o_guion_pasan(servicio, nombre):
+    visitantes = [Visitante(nombre, "30123456", 25)]
+
+    inscripcion = servicio.inscribir(**datos_validos(visitantes=visitantes))
+
+    assert inscripcion.visitantes[0].nombre == nombre
+
+
+def test_el_mismo_dni_dos_veces_en_la_inscripcion_falla(servicio):
+    visitantes = [Visitante("Ana Perez", "30123456", 25),
+                  Visitante("Juan Gomez", "30123456", 30)]
+
+    with pytest.raises(DniRepetidoError):
+        servicio.inscribir(**datos_validos(cantidad_personas=2,
+                                           visitantes=visitantes))
 
 
 def test_talle_inexistente_falla(servicio):
@@ -179,7 +213,11 @@ def test_inscripcion_rechazada_no_envia_correo(servicio, correo):
     assert correo.enviados == []
 
 
-@pytest.mark.parametrize("direccion", ["", "ana", "ana@", "@mail.com"])
+@pytest.mark.parametrize("direccion", [
+    "", "ana", "ana@", "@mail.com", "ana@mail", "ana@mail.c",
+    "<ana>@mail.com", "ana perez@mail.com", "ana@@mail.com",
+    "ana@mail..com", "a" * 250 + "@mail.com",
+])
 def test_correo_de_contacto_invalido_falla(servicio, direccion):
     with pytest.raises(CorreoInvalidoError):
         servicio.inscribir(**datos_validos(correo=direccion))
