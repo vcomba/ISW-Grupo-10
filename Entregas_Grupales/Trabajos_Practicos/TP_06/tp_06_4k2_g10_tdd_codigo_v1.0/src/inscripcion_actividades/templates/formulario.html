@@ -46,7 +46,7 @@
   <section class="tarjeta">
     <h2>3. Contacto y t&eacute;rminos</h2>
     <label for="correo">Correo electr&oacute;nico (te enviamos la inscripci&oacute;n con el QR)</label>
-    <input type="email" id="correo" name="correo" required value="{{ valores.get('correo', '') }}">
+    <input type="email" id="correo" name="correo" required maxlength="254" value="{{ valores.get('correo', '') }}">
     <label>T&eacute;rminos y condiciones de <span id="nombre-actividad"></span></label>
     <ul class="terminos">
       {% for t in terminos_generales %}<li>{{ t }}</li>{% endfor %}
@@ -94,10 +94,13 @@
       const opciones = ['<option value="">Elegir talle</option>'].concat(
         tallas.map(t => '<option' + (t === talla ? ' selected' : '') + '>' + t + '</option>')).join('');
       html += '<div class="participante"><h3>Persona ' + (i + 1) + '</h3>' +
-        campo('Nombre y apellido', '<input name="nombre_' + i + '" required value="' + escapar(valor('nombre_' + i)) + '">') +
+        campo('Nombre y apellido', '<input name="nombre_' + i + '" required minlength="2" maxlength="60"' +
+          ' pattern="[A-Za-z\u00C0-\u00FF&#39; .\\-]{2,60}" title="Solo letras, espacios, acentos, ap\u00f3strofo o guion (2 a 60 caracteres)"' +
+          ' value="' + escapar(valor('nombre_' + i)) + '">') +
         '<div class="fila">' +
-        campo('DNI', '<input name="dni_' + i + '" inputmode="numeric" required value="' + escapar(valor('dni_' + i)) + '">') +
-        campo('Edad', '<input name="edad_' + i + '" type="number" min="0" max="120" required value="' + escapar(valor('edad_' + i)) + '">') +
+        campo('DNI', '<input name="dni_' + i + '" inputmode="numeric" required maxlength="8" pattern="[0-9]{7,8}"' +
+          ' title="7 u 8 n\u00fameros, sin puntos" value="' + escapar(valor('dni_' + i)) + '">') +
+        campo('Edad', '<input name="edad_' + i + '" type="number" min="0" max="120" step="1" required value="' + escapar(valor('edad_' + i)) + '">') +
         '</div>' +
         (requiereTalla ? campo('Talle de vestimenta', '<select name="talla_' + i + '" required>' + opciones + '</select>') : '') +
         '</div>';
