@@ -37,6 +37,10 @@ class HorarioNoDisponibleError(InscripcionError):
     pass
 
 
+class TerminosNoAceptadosError(InscripcionError):
+    pass
+
+
 @dataclass
 class Visitante:
     nombre: str
@@ -76,6 +80,8 @@ class ServicioInscripcion:
             raise HorarioNoDisponibleError(horario)
         if self._cupos_disponibles(CATALOGO[actividad], horario) <= 0:
             raise SinCupoError(actividad)
+        if not acepta_terminos:
+            raise TerminosNoAceptadosError(actividad)
         return Inscripcion(actividad, horario, cantidad_personas)
 
     def _cupos_disponibles(self, actividad, horario):
