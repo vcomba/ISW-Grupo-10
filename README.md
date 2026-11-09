@@ -12,17 +12,12 @@ Cecilia Massano
 
 Integrantes
 Legajo	Apellido y nombre
+423349	CARULLO PÉREZ, Lautaro
 94964	CHAVES, Benjamín
 94439	COMBA, Valentino
-402618	GENERO, Cristobal
-95312	RIVAROLA, Matias
-95665	CARRAZCO CORZO, Mirco
-95032	CRESPIN, Sasha
-87473	DÍAZ, Iván
-423349	CARULLO PÉREZ, Lautaro
-68160	GUEVARA, Denis
-94537	MORENO MEZZADRA, Sol Fátima
 91227	FORMOSO, Matias Agustin
+94537	MORENO MEZZADRA, Sol Fátima
+95312	RIVAROLA, Matias
 94180	ZULOAGA, Sabrina Rocío
 
 Organización del repositorio
