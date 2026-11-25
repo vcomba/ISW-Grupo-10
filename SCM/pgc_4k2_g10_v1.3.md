@@ -96,4 +96,6 @@ Formato: `lb_[NN]_[HITO]`
 - `lb_01_tp06_finalizado`
 - `lb_02_post_correcciones_tp04`
 - `lb_03_tp07_finalizado`
+- `lb_04_tI01_finalizado`
+- `lb_05_tI02_finalizado`
 - `lb_[NN]_cierre_cursada`
