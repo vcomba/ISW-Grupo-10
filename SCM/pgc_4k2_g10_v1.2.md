@@ -92,6 +92,8 @@ Cada línea base abarca todos los IC del repositorio en el commit etiquetado. Se
 
 Formato: `lb_[NN]_[HITO]`
 
+
 - `lb_01_tp06_finalizado`
 - `lb_02_post_correcciones_tp04`
+- `lb_03_tp07_finalizado`
 - `lb_[NN]_cierre_cursada`
